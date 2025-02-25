@@ -1,0 +1,27 @@
+sudo apt install libapache2-mod-security2 -y
+
+
+sudo cp /etc/modsecurity/modsecurity.conf-recommended /etc/modsecurity/modsecurity.conf
+
+
+sudo nano /etc/modsecurity/modsecurity.conf
+
+#SQL Injection Protection
+SecRule ARGS "@rx (?i:(union.*select.*from|select.*from.*information_schema))" \
+    "id:1000001, phase:2, deny, log, msg:'SQL Injection Attempt Detected in Parameter Value'"
+
+SecRule ARGS_NAMES "@rx (?i:(or.*1=1|and.*1=1|select.*from|insert.*into))" \
+    "id:1000002, phase:2, deny, log, msg:'Possible SQL Injection in Parameter Name'"
+
+SecRule ARGS "@rx (?i:(or.*1=1|union.*select|--|-;|drop.*table|insert.*into|select.*from))" \
+    "id:1000003, phase:2, deny, log, msg:'SQL Injection Attempt Detected in Parameter Value'"
+
+
+
+
+sudo systemctl restart apache2
+
+
+
+
+
